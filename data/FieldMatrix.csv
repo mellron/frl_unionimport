@@ -1,0 +1,46 @@
+Database xml field name,Application Field Name,Admin Only ,Type,Possible values allowed
+,,,,
+AccrualID,Accrual Basis,,Drop down,"0 = UNK , 1 = Act/360m, 2 = 30/360 (Lease Only) , 3 = Act/Act (Govt or Syndication ONLY)"
+AccountSystemID,Accounting System,,Drop down,"0 = UNK, 1 = AFS, 2 = CML, 3 = CPI, 4 = DSI, 5 = Other Lease, 6 = ALS, 7 = LoanIQ"
+AllInRate,All-In Rate,,Input box,Float value 
+AmortizationTermMonths,Amortization Term Months,,Input box,Fixed integer no decimal 
+AmortizationTypeID,Amortization Type,,Drop down,"0 = UNK, 1 = Equal Payment (P \& I), 2 = Interest Only (until maturity), 3 = Level Principal (P + I), 4 = Irregular (specify in notes)"
+DocumentDate  # aka closing date,Document Date:,,Calander ,Date in mm/mm/yyyy format
+CostCenter,Cost Center:,,Input box,Cost center number
+CustomerName,Customer:,,Input box,Text input for customer name
+DivisionID,Division:,,Drop down,"0 = Unknown, 1 = Large Corporate \& Specialty Lending, 2 = Commercial Banking, 3 = Equipment Finance, 4 = Community Banking - do not use, 5 = Business Banking, 6 = CIP, 7 = Wealth Management, 8 = CRE, 9 = CMD"
+FirstPaymentDate,First Payment Date:,,Calander ,Date in mm/mm/yyyy format
+FixedTermMonths,Fixed Term:,,Input box,Numeric value 1 -360
+ForwardCharge,Forward Charge:  ,Yes,Input box,Float value 
+ForwardSettlement,Forward Settlement Months:,,Input box,Fixed integer no decimal 
+FundingAmount,Funding Amount:,,Input box,Float value 
+InterestFrequencyID,Interest Frequency:,,Drop down,"0 = UNK, 1 = Monthly, 2 = Quarterly, 3 = Semi-Annual, 4 = Annual, 5 = At Maturity"
+LeaseResidual,Lease Residual:,,Input box,Float value  %
+LoanTermMonths,Loan Term:,,Input box,Numeric value 1 -360
+MaturityDate,Maturity Date:,,Calander ,Date in mm/mm/yyyy format
+MMCOF,MMCOF:,Yes,Input box,Float value
+Notes,Notes:ÿ,,Multi Row Input box,
+Phone,Phone:,,Input box,xxx-xxx-xxxx format
+PPRiskPremium,NOT USED or visable,,Input box,Float value
+PPRollOver,PP Rollover:,Yes,Input box,Float value
+PrincipalFrequencyID,Principal Frequency:,,Drop down,"0 = UNK, 1 = Monthly, 2 = Quarterly, 3 = Semi-Annual, 4 = Annual, 5 = At Maturity"
+DSILease,NOT USED or visable,,,
+RePriceDate,Re-Price Date:,,Calander,Date in mm/mm/yyyy format
+RequestorID,Requestor ID:,,Input box,Preferred ID of user
+ApproverInitials,Approver:,Yes,Input box,3 digit text field for initials .
+Requestor ,Requestor:,,Input box,Read Only .  Is supplied by database based on Preferred ID of user.
+Spread,Spread:,,Input box,Numeric % 
+AdvanceTypeID,Advance Type:,,Drop down,"1 = Single, 2 = Multiple"
+CurrencyType,Currency:,,Drop down,"1 = $USD , 2 = $CAD"
+LiquidityID  # aka term issuance,Term Issuance Premium Exception:,,Check Box,1 or 0
+ConfirmationInitials,Enter your initials here:,,Input box,3 digit text field for initials .
+IndemnityAgreement,Customer has signed aÿFixed Rate Lock and Indemnity Agreementÿor collected forward rate lock deposit (if applicable per division policy), ,Check Box,1 or 0
+LenderName,Lender Name:,,Input box,Text field 
+IsCommunityInvestmentProgram,Community Investment Program,,Check Box,1 or 0
+IsPrePaymentWaiver,Prepayment Waiver,,Check Box,1 or 0
+PrePaymentTypeID,Below : Prepayment Waiver,,Drop down,"0 = Unknown, 1 = Break Funding, 2 = Yield Maintenance, 3 = Yield Maintenance w/Cap, 4 = None, 5 = Other (specify in notes), 6 = $500 Charge, 7 = Decreasing Prepayment Indemnity"
+PartialPrePaymentID,Below : Prepayment Waiver,,,"0 = Unknown, 1 = None, 2 = 0%, 3 = 10%, 4 = 15% (CLD only), 5 = 20%, 6 = 30%, 7 = Full"
+PrePaymentWaiverAcknowledgement,Prepayment Waiver,,Check Box,1 or 0
+RequestorEmail,Requestor Email:,,Text box,Email address
+LenderID,Lender ID:,,Text box,Lender ID 
+IsCommercialMortgageEligible,Commercial mortgage eligible for FHLB credit,,Check Box,1 or 0
