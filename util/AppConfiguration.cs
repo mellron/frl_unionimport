@@ -11,7 +11,7 @@ namespace frl_unionimport.util
         // Static constructor builds the configuration once.
         static AppConfiguration()
         {
-            string basePath = Directory.GetCurrentDirectory();
+            string basePath = AppContext.BaseDirectory;
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(basePath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)

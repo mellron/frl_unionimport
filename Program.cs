@@ -1,15 +1,21 @@
 ﻿using System;
 using System.IO;
+using frl_unionimport.util; // Importing AppConfiguration
 
 namespace frl_unionimport
 {
     class Program
     {
-        private static util.ConsoleQ _consoleQ = new();
-        static async Task Main(string[] args)
+
+
+        static void Main(string[] args)
         {
+            ImportStage _oImportStage = new();
+
+            string inputfilename = AppConfiguration.GetPropertyValue("inputfile");
+
+            _oImportStage.LoadFile(inputfilename);
             
-            await _consoleQ.WaitForCompletionAsync();
         }
     }
 }
