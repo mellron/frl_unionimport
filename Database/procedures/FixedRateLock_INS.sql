@@ -5,6 +5,7 @@ GO
 
 CREATE OR ALTER PROCEDURE [dbo].[FixedRateLock_INS] 
 (
+    @ReferenceAlpha VARCHAR(10),  
     @AccrualID INT,
     @AcctSystemID INT,
     @AdvanceTypeID SMALLINT = NULL,
@@ -45,7 +46,6 @@ CREATE OR ALTER PROCEDURE [dbo].[FixedRateLock_INS]
     @PrePaymentWaiver BIT,
     @PrePaymentWaiverAcknowledgement BIT,
     @PrincipalFreqID INT,
-    @ReferenceAlpha VARCHAR(10) = '',
     @RePriceDt DATETIME = NULL,
     @RequestorEmail VARCHAR(50) = NULL,
     @RequestorID VARCHAR(7),
@@ -54,48 +54,35 @@ CREATE OR ALTER PROCEDURE [dbo].[FixedRateLock_INS]
 AS
 BEGIN
     SET NOCOUNT ON;
+
     DECLARE @Error INT, @IdentityID INT, @ReferenceNumber VARCHAR(10);
-    BEGIN TRAN;
-    
-    -- Insert into Fixed Rate Lock table
-    INSERT INTO FRLI_FixedRateLock 
-    (
-        AccrualID, AcctSystemID, AdvanceTypeID, AllInRate, AmortTerm, AmortTypeID, Approver, CIP, ClosingDt, ConfirmationInitials, CostCenter, CurrencyType, CustomerName, 
-        DSILease, FirstPmtDt, FixedTerm, ForwardCharge, ForwardSettlement, FundingAmt, IndemnityAgreement, InterestFreqID, IsCommercialMortgageEligible, LastUpdateDT, LeaseResidual, 
-        LenderID, LenderName, LiquidityID, LoanTerm, MaturityDate, MMCOF, Notes, Originator, PartialPrePayID, Phone, PPRiskPremium, PPRollOver, PrePaymentTypeID, PrePaymentWaiver, 
-        PrePaymentWaiverAcknowledgement, PrincipalFreqID, ReferenceAlpha, RePriceDt, RequestorEmail, RequestorID, Spread
-    )
-    VALUES
-    (
-        @AccrualID, @AcctSystemID, @AdvanceTypeID, @AllInRate, @AmortTerm, @AmortTypeID, @Approver, @CIP, @ClosingDt, @ConfirmationInitials, @CostCenter, @CurrencyType, @CustomerName, 
-        @DSILease, @FirstPmtDt, @FixedTerm, @ForwardCharge, @ForwardSettlement, @FundingAmt, @IndemnityAgreement, @InterestFreqID, @IsCommercialMortgageEligible, @LastUpdateDT, @LeaseResidual, 
-        @LenderID, @LenderName, @LiquidityID, @LoanTerm, @MaturityDate, @MMCOF, @Notes, @Originator, @PartialPrePayID, @Phone, @PPRiskPremium, @PPRollOver, @PrePaymentTypeID, @PrePaymentWaiver, 
-        @PrePaymentWaiverAcknowledgement, @PrincipalFreqID, @ReferenceAlpha, @RePriceDt, @RequestorEmail, @RequestorID, @Spread
-    );
-    
-    -- Capture error and new identity value
-    SELECT @Error = @@ERROR, @IdentityID = SCOPE_IDENTITY();
-    IF @Error <> 0
-    BEGIN
+
+    BEGIN TRY
+        BEGIN TRAN;
+        
+        -- Insert into Fixed Rate Lock table
+        INSERT INTO FRLI_FixedRateLock 
+        (
+            AccrualID, AcctSystemID, AdvanceTypeID, AllInRate, AmortTerm, AmortTypeID, Approver, CIP, ClosingDt, ConfirmationInitials, CostCenter, CurrencyType, CustomerName, 
+            DSILease, FirstPmtDt, FixedTerm, ForwardCharge, ForwardSettlement, FundingAmt, IndemnityAgreement, InterestFreqID, IsCommercialMortgageEligible, LastUpdateDT, LeaseResidual, 
+            LenderID, LenderName, LiquidityID, LoanTerm, MaturityDate, MMCOF, Notes, Originator, PartialPrePayID, Phone, PPRiskPremium, PPRollOver, PrePaymentTypeID, PrePaymentWaiver, 
+            PrePaymentWaiverAcknowledgement, PrincipalFreqID, ReferenceAlpha, RePriceDt, RequestorEmail, RequestorID, Spread
+        )
+        VALUES
+        (
+            @AccrualID, @AcctSystemID, @AdvanceTypeID, @AllInRate, @AmortTerm, @AmortTypeID, @Approver, @CIP, @ClosingDt, @ConfirmationInitials, @CostCenter, @CurrencyType, @CustomerName, 
+            @DSILease, @FirstPmtDt, @FixedTerm, @ForwardCharge, @ForwardSettlement, @FundingAmt, @IndemnityAgreement, @InterestFreqID, @IsCommercialMortgageEligible, @LastUpdateDT, @LeaseResidual, 
+            @LenderID, @LenderName, @LiquidityID, @LoanTerm, @MaturityDate, @MMCOF, @Notes, @Originator, @PartialPrePayID, @Phone, @PPRiskPremium, @PPRollOver, @PrePaymentTypeID, @PrePaymentWaiver, 
+            @PrePaymentWaiverAcknowledgement, @PrincipalFreqID, @ReferenceAlpha, @RePriceDt, @RequestorEmail, @RequestorID, @Spread
+        );
+        
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
         ROLLBACK TRAN;
-        RETURN (@Error);
-    END;
-    
-    -- Generate ReferenceAlpha based on Identity
-    SELECT @ReferenceNumber = CASE WHEN @IdentityID < 100000 
-        THEN CAST(@IdentityID AS VARCHAR)
-        ELSE CHAR(65 + ((@IdentityID - 100000) / 10000)) + RIGHT(CAST(@IdentityID AS VARCHAR), 4) 
-    END;
-    
-    -- Update ReferenceAlpha in the table
-    UPDATE dbo.FRLI_FixedRateLock 
-    SET ReferenceAlpha = @ReferenceNumber
-    WHERE ReferenceNumber = @IdentityID;
-    
-    COMMIT TRAN;
-    
-    -- Execute selection procedure
-    EXEC FixedRateLock_SEL @ReferenceNumber;
-    
-    RETURN (@@ERROR);
+        SELECT @Error = ERROR_NUMBER();
+        RETURN @Error;
+    END CATCH
+
+    RETURN 0;
 END;

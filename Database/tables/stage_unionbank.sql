@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS stage_unionbank;
 GO
 CREATE TABLE stage_unionbank (
     -- ID
-    ID VARCHAR(500),
+    ReferenceAlpha VARCHAR(500),
     -- Accrual Basis
     AccrualID VARCHAR(500),
     -- Accounting System
