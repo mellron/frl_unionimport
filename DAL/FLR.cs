@@ -2,126 +2,86 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using Utility.Database.MSSQL; // Or your actual namespace for CreateConnection
+using frl_unionimport.models; // Assuming this is where your UnionBankData class is located
+
 
 namespace frl_unionimport.DAL
 {
-    public class FixedRateLockDAL : Base
-    {
-        public static bool InsertFixedRateLock(
-            string referenceAlpha,            // @ReferenceAlpha VARCHAR(10)
-            int accrualID,                    // @AccrualID INT
-            int acctSystemID,                 // @AcctSystemID INT
-            short? advanceTypeID,             // @AdvanceTypeID SMALLINT = NULL
-            decimal? allInRate,               // @AllInRate DECIMAL(28,2) = NULL
-            short? amortTerm,                 // @AmortTerm SMALLINT = NULL
-            int amortTypeID,                  // @AmortTypeID INT
-            string approver,                  // @Approver VARCHAR(35) = NULL
-            bool cip,                         // @CIP BIT
-            DateTime closingDt,               // @ClosingDt DATETIME
-            string confirmationInitials,      // @ConfirmationInitials VARCHAR(3)
-            string costCenter,                // @CostCenter CHAR(11)
-            short currencyType,               // @CurrencyType SMALLINT
-            string customerName,              // @CustomerName VARCHAR(60)
-            string dsiLease,                  // @DSILease CHAR(13) = NULL
-            DateTime? firstPmtDt,             // @FirstPmtDt DATETIME
-            short fixedTerm,                  // @FixedTerm SMALLINT
-            decimal? forwardCharge,           // @ForwardCharge MONEY = NULL
-            short? forwardSettlement,         // @ForwardSettlement SMALLINT = NULL
-            decimal fundingAmt,               // @FundingAmt MONEY
-            short? indemnityAgreement,        // @IndemnityAgreement SMALLINT = NULL
-            int interestFreqID,               // @InterestFreqID INT
-            bool isCommercialMortgageEligible, // @IsCommercialMortgageEligible BIT
-            DateTime? lastUpdateDT,           // @LastUpdateDT DATETIME = NULL
-            decimal? leaseResidual,           // @LeaseResidual DECIMAL(5,2) = NULL
-            string lenderID,                  // @LenderID VARCHAR(7) = NULL
-            string lenderName,                // @LenderName VARCHAR(50)
-            short liquidityID,                // @LiquidityID SMALLINT
-            short? loanTerm,                  // @LoanTerm SMALLINT = NULL
-            DateTime maturityDate,            // @MaturityDate DATETIME
-            decimal? mmcof,                   // @MMCOF DECIMAL(28,2) = NULL
-            string notes,                     // @Notes VARCHAR(2048) = NULL
-            string originator,                // @Originator VARCHAR(35)
-            byte? partialPrePayID,            // @PartialPrePayID TINYINT = NULL
-            string phone,                     // @Phone VARCHAR(12)
-            decimal? ppRiskPremium,           // @PPRiskPremium MONEY = NULL
-            decimal? ppRollOver,              // @PPRollOver MONEY = NULL
-            int? prePaymentTypeID,            // @PrePaymentTypeID INT = NULL
-            bool prePaymentWaiver,            // @PrePaymentWaiver BIT
-            bool prePaymentWaiverAcknowledgement,  // @PrePaymentWaiverAcknowledgement BIT
-            int principalFreqID,              // @PrincipalFreqID INT
-            DateTime? rePriceDt,              // @RePriceDt DATETIME = NULL
-            string requestorEmail,            // @RequestorEmail VARCHAR(50) = NULL
-            string requestorID,               // @RequestorID VARCHAR(7)
-            decimal? spread                   // @Spread DECIMAL(5,2) = NULL
-        )
+    public static class FLR  
+    { 
+        public static bool InsertFixedRateLock(UnionBankData unionBankData)
         {
             bool isSuccess = false;
 
             try
             {
-                using (SqlConnection conn = (SqlConnection)CreateConnection())
+
+                using SqlConnection conn = (SqlConnection)Base.CreateConnection();
+
+                conn.Open();
+
+                using (SqlCommand cmd = new SqlCommand("dbo.FixedRateLock_INS", conn))
                 {
-                    conn.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                    using (SqlCommand cmd = new SqlCommand("dbo.FixedRateLock_INS", conn))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+                    // Because some parameters are optional (can be NULL),
+                    // we use the pattern: (object)parameter ?? DBNull.Value
+                    // for those that are nullable.
+                    // For mandatory fields, just pass the value directly.
 
-                        // Because some parameters are optional (can be NULL),
-                        // we use the pattern: (object)parameter ?? DBNull.Value
-                        // for those that are nullable.
-                        // For mandatory fields, just pass the value directly.
+                    cmd.Parameters.AddWithValue("@ReferenceAlpha", unionBankData.ReferenceAlpha);
+                    cmd.Parameters.AddWithValue("@AccrualID", unionBankData.AccrualID);
+                    cmd.Parameters.AddWithValue("@AcctSystemID", unionBankData.AcctSystemID);
 
-                        cmd.Parameters.AddWithValue("@ReferenceAlpha", referenceAlpha ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@AccrualID", accrualID);
-                        cmd.Parameters.AddWithValue("@AcctSystemID", acctSystemID);
-                        cmd.Parameters.AddWithValue("@AdvanceTypeID", (object)advanceTypeID ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@AllInRate", (object)allInRate ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@AmortTerm", (object)amortTerm ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@AmortTypeID", amortTypeID);
-                        cmd.Parameters.AddWithValue("@Approver", (object)approver ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@CIP", cip);
-                        cmd.Parameters.AddWithValue("@ClosingDt", closingDt);
-                        cmd.Parameters.AddWithValue("@ConfirmationInitials", confirmationInitials ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@CostCenter", costCenter ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@CurrencyType", currencyType);
-                        cmd.Parameters.AddWithValue("@CustomerName", customerName ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@DSILease", (object)dsiLease ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@FirstPmtDt", (object)firstPmtDt ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@FixedTerm", fixedTerm);
-                        cmd.Parameters.AddWithValue("@ForwardCharge", (object)forwardCharge ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@ForwardSettlement", (object)forwardSettlement ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@FundingAmt", fundingAmt);
-                        cmd.Parameters.AddWithValue("@IndemnityAgreement", (object)indemnityAgreement ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@InterestFreqID", interestFreqID);
-                        cmd.Parameters.AddWithValue("@IsCommercialMortgageEligible", isCommercialMortgageEligible);
-                        cmd.Parameters.AddWithValue("@LastUpdateDT", (object)lastUpdateDT ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@LeaseResidual", (object)leaseResidual ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@LenderID", (object)lenderID ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@LenderName", lenderName ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@LiquidityID", liquidityID);
-                        cmd.Parameters.AddWithValue("@LoanTerm", (object)loanTerm ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@MaturityDate", maturityDate);
-                        cmd.Parameters.AddWithValue("@MMCOF", (object)mmcof ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Notes", (object)notes ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Originator", originator ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@PartialPrePayID", (object)partialPrePayID ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Phone", phone ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@PPRiskPremium", (object)ppRiskPremium ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@PPRollOver", (object)ppRollOver ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@PrePaymentTypeID", (object)prePaymentTypeID ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@PrePaymentWaiver", prePaymentWaiver);
-                        cmd.Parameters.AddWithValue("@PrePaymentWaiverAcknowledgement", prePaymentWaiverAcknowledgement);
-                        cmd.Parameters.AddWithValue("@PrincipalFreqID", principalFreqID);
-                        cmd.Parameters.AddWithValue("@RePriceDt", (object)rePriceDt ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@RequestorEmail", (object)requestorEmail ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@RequestorID", requestorID ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Spread", (object)spread ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@AllInRate", unionBankData.AllInRate);
+                    cmd.Parameters.AddWithValue("@AmortTerm", unionBankData.AmortTerm);
+                    cmd.Parameters.AddWithValue("@AmortTypeID", unionBankData.AmortTypeID);
+                    cmd.Parameters.AddWithValue("@ClosingDt", unionBankData.DocumentDate);
+                    cmd.Parameters.AddWithValue("@CostCenter", unionBankData.CostCenter);
+                    cmd.Parameters.AddWithValue("@CustomerName", unionBankData.CustomerName);
+                    cmd.Parameters.AddWithValue("@DivisionID", unionBankData.DivisionID);
+                    cmd.Parameters.AddWithValue("@FirstPmtDt", unionBankData.FirstPmtDt);
+                    cmd.Parameters.AddWithValue("@FixedTerm", unionBankData.FixedTerm);
+                    cmd.Parameters.AddWithValue("@ForwardCharge", unionBankData.ForwardCharge);
+                    cmd.Parameters.AddWithValue("@ForwardSettlement", unionBankData.ForwardSettlement);
+                    cmd.Parameters.AddWithValue("@FundingAmt", unionBankData.FundingAmt);
+                    cmd.Parameters.AddWithValue("@InterestFreqID", unionBankData.InterestFreqID);
+                    cmd.Parameters.AddWithValue("@LeaseResidual", unionBankData.LeaseResidual);
+                    cmd.Parameters.AddWithValue("@LoanTerm", unionBankData.LoanTerm);
+                    cmd.Parameters.AddWithValue("@MaturityDate", unionBankData.MaturityDate);
+                    cmd.Parameters.AddWithValue("@MMCOF", unionBankData.MMCOF);
+                    cmd.Parameters.AddWithValue("@Notes", unionBankData.Notes);
+                    cmd.Parameters.AddWithValue("@Phone", unionBankData.Phone);
+                    cmd.Parameters.AddWithValue("@PPRiskPremium", unionBankData.PPRiskPremium);
+                    cmd.Parameters.AddWithValue("@PPRollOver", unionBankData.PPRollOver);
+                    cmd.Parameters.AddWithValue("@PrincipalFreqID", unionBankData.PrincipalFreqID);
+                    cmd.Parameters.AddWithValue("@DSILease", unionBankData.DSILease);
+                    cmd.Parameters.AddWithValue("@RePriceDt", unionBankData.RePriceDt);
+                    cmd.Parameters.AddWithValue("@RequestorID", unionBankData.RequestorID);
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        isSuccess = (rowsAffected > 0);
-                    }
+                    cmd.Parameters.AddWithValue("@RequestorName", unionBankData.RequestorName);
+                    cmd.Parameters.AddWithValue("@Spread", unionBankData.Spread);
+                    cmd.Parameters.AddWithValue("@AdvanceTypeID", unionBankData.AdvanceTypeID);
+                    cmd.Parameters.AddWithValue("@CurrencyType", unionBankData.CurrencyType);
+                    cmd.Parameters.AddWithValue("@LiquidityID", unionBankData.LiquidityID);
+                    cmd.Parameters.AddWithValue("@ConfirmationInitials", unionBankData.ConfirmationInitials);
+                    cmd.Parameters.AddWithValue("@IndemnityAgreement", unionBankData.IndemnityAgreement);
+                    cmd.Parameters.AddWithValue("@LenderName", unionBankData.LenderName);
+                    cmd.Parameters.AddWithValue("@CIP", unionBankData.IsCommercialMortgageEligible);
+                    cmd.Parameters.AddWithValue("@PrePaymentWaiver", unionBankData.IsPrePaymentWaiver);
+                    cmd.Parameters.AddWithValue("@PrePaymentTypeID", unionBankData.PrePaymentTypeID);
+                    cmd.Parameters.AddWithValue("@PartialPrePayID", unionBankData.PartialPrePayID);
+                    cmd.Parameters.AddWithValue("@PrePaymentWaiverAcknowledgement", unionBankData.PrePaymentWaiverAcknowledgement);
+                    cmd.Parameters.AddWithValue("@RequestorEmail", unionBankData.RequestorEmail);
+                    cmd.Parameters.AddWithValue("@LenderID", unionBankData.LenderID);
+
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    isSuccess = (rowsAffected > 0);
                 }
+
+                conn.Close();
             }
             catch (Exception ex)
             {
@@ -130,6 +90,83 @@ namespace frl_unionimport.DAL
             }
 
             return isSuccess;
+        }
+
+        public static string FindEmailAddressByID(string value)
+        {
+            string email = string.Empty;
+
+            try
+            {
+                using SqlConnection conn = (SqlConnection)Base.CreateConnection();
+
+                conn.Open();
+
+                using (SqlCommand cmd = new SqlCommand("dbo.FindEmailAddressByID", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@intranetid", value);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        email = reader["Email"].ToString();
+                    }
+
+                    reader.Close();
+                }
+
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception as appropriate.
+                Console.WriteLine("Error finding email address: " + ex.Message);
+
+                return string.Empty;
+            }
+
+            return email;
+        }
+        public static string FindNameByID(string value)
+        {
+            string name = string.Empty;
+
+            try
+            {
+                using SqlConnection conn = (SqlConnection)Base.CreateConnection();
+
+                conn.Open();
+
+                using (SqlCommand cmd = new SqlCommand("dbo.FindNameByID", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@intranetid", value);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        name = reader["Name"].ToString();
+                    }
+
+                    reader.Close();
+                }
+
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception as appropriate.
+                Console.WriteLine("Error finding name: " + ex.Message);
+
+                return string.Empty;
+            }
+
+            return name;
         }
     }
 }
